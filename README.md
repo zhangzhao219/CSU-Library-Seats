@@ -16,6 +16,7 @@
 1. 在浏览器中安装 ```Tampermonkey``` 
    https://www.tampermonkey.net/
 2. 添加新脚本——将 ```PC.js``` 整个复制进去—— ```Ctrl+S``` 保存——重启浏览器
+3. 进入图书馆预约网页 http://libzw.csu.edu.cn/home/web/f_second 进入某层楼的某个区，即可看到增加的选座按钮
 
 ## 使用方法
 
