@@ -4,7 +4,7 @@
 // @version      1.0
 // @description  Choosing seats in CSU Library Automatically!
 // @author       Zhang Zhao
-// @homepage     https://github.com/zhangzhao219
+// @homepage     https://github.com/zhangzhao219/CSU-Library-Seats
 // @match        http://libzw.csu.edu.cn/web/seat3*
 // @grant        none
 // ==/UserScript==
