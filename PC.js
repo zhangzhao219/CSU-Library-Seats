@@ -3,7 +3,8 @@
 // @namespace    http://libzw.csu.edu.cn
 // @version      1.0
 // @description  Choosing seats in CSU Library Automatically!
-// @author       Li Junda
+// @author       Zhang Zhao, Li Junda
+// @homepage     https://github.com/zhangzhao219/CSU-Library-Seats
 // @match        http://libzw.csu.edu.cn/web/seat3*
 // @grant        none
 // ==/UserScript==
