@@ -392,9 +392,11 @@
 
             temp0.onclick = function(){
                 for(i in document.getElementById("floor").children){
+                    if(typeof(document.getElementById("floor").children[i])=="object"){
                     if (i != 0 && i != 1 && document.getElementById("floor").children[i].getAttribute("group") == "0") {
                         document.getElementById("floor").children[i].click();
                         document.getElementById("floor").children[i].click();
+                    }
                     }
                 }
             }
@@ -409,10 +411,13 @@
 
             temp1.onclick = function(){
                 for(i in document.getElementById("floor").children){
-                    if (i != 0 && i != 1 && document.getElementById("floor").children[i].getAttribute("group") == "1") {
-                        document.getElementById("floor").children[i].click();
-                        document.getElementById("floor").children[i].click();
+                    if(typeof(document.getElementById("floor").children[i])=="object"){
+                        if (i != 0 && i != 1 && document.getElementById("floor").children[i].getAttribute("group") == "1") {
+                            document.getElementById("floor").children[i].click();
+                            document.getElementById("floor").children[i].click();
+                        }
                     }
+                    
                 }
             }
 
@@ -427,10 +432,12 @@
 
             temp2.onclick = function(){
                 for(i in document.getElementById("floor").children){
+                    if(typeof(document.getElementById("floor").children[i])=="object"){
                     if (i != 0 && i != 1 && document.getElementById("floor").children[i].getAttribute("group") == "2") {
                         document.getElementById("floor").children[i].click();
                         document.getElementById("floor").children[i].click();
                     }
+                }
                 }
             }
 
@@ -445,9 +452,11 @@
 
             temp3.onclick = function(){
                 for(i in document.getElementById("floor").children){
+                    if(typeof(document.getElementById("floor").children[i])=="object"){
                     if (i != 0 && i != 1 && document.getElementById("floor").children[i].getAttribute("group") == "3") {
                         document.getElementById("floor").children[i].click();
                         document.getElementById("floor").children[i].click();
+                    }
                     }
                 }
             }
