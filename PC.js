@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name         中南大学图书馆自动抢座（电脑版）
+// @name         中南大学图书馆自动抢座
 // @namespace    http://libzw.csu.edu.cn
 // @version      1.0
 // @description  Choosing seats in CSU Library Automatically!
-// @author       Zhang Zhao
+// @author       Zhang Zhao, Li Junda
 // @homepage     https://github.com/zhangzhao219/CSU-Library-Seats
 // @match        http://libzw.csu.edu.cn/web/seat3*
 // @grant        none
@@ -16,6 +16,7 @@
     var ownliketempseat, ownhatetempseat;
     var i;
     var timeinterval = 1;
+    var g1 = 0;
     var trytimes = 1;
     var time2;
     const bottommessage = document.getElementsByClassName("foots col-xs-12")[0].children[0].innerHTML;
@@ -176,6 +177,33 @@
         button_user_begin.style.display = "block";
         button_user_begin.style.fontSize = "17px";
 
+        // 新校区图书馆5楼A区的座位配置
+        var buttonx5A = document.createElement("button");
+        buttonx5A.innerHTML = "新校五楼A区";
+        buttonx5A.className = "btn btn-default";
+        buttonx5A.setAttribute("data-toggle", "tooltip");
+        buttonx5A.setAttribute("data-placement", "right");
+        buttonx5A.title = "预配置新校五楼A区抢座</br>仅选取有电座位</br>立即开抢";
+        buttonx5A.style.display = "block";
+
+        // 新校区图书馆5楼A区的座位配置（只约空位）
+        var buttonx5A1 = document.createElement("button");
+        buttonx5A1.innerHTML = "新校五楼A区zz";
+        buttonx5A1.className = "btn btn-default";
+        buttonx5A1.setAttribute("data-toggle", "tooltip");
+        buttonx5A1.setAttribute("data-placement", "right");
+        buttonx5A1.title = "预配置新校五楼A区抢座</br>刷新时间1秒</br>仅选取有电无主机座位</br>立即开抢";
+        buttonx5A1.style.display = "block";
+
+        // // 本部图书馆2楼B区的座位配置
+        // var buttonb2B = document.createElement("button");
+        // buttonb2B.innerHTML = "本部二楼B区";
+        // buttonb2B.className = "btn btn-default";
+        // buttonb2B.setAttribute("data-toggle", "tooltip");
+        // buttonb2B.setAttribute("data-placement", "right");
+        // buttonb2B.title = "预配置本部二楼B区抢座</br>仅选取有电座位</br>立即开抢";
+        // buttonb2B.style.display = "block";
+
         // 放置按钮的位置
         var location_to_place_buttons = document.getElementById('nav-date');
 
@@ -184,7 +212,20 @@
 
         location_to_place_buttons.appendChild(button_default_begin);
         location_to_place_buttons.appendChild(button_stop);
-        location_to_place_buttons.appendChild(button_user_begin);
+
+        var tempbuttondiv = document.createElement("div");
+
+        tempbuttondiv.appendChild(button_user_begin);
+
+        var tempdiv = document.createElement("div");
+        tempdiv.style.display = "none";
+        tempdiv.appendChild(buttonx5A);
+        tempdiv.appendChild(buttonx5A1);
+        // tempdiv.appendChild(buttonb2B);
+
+        tempbuttondiv.appendChild(tempdiv);
+
+        location_to_place_buttons.appendChild(tempbuttondiv);
 
         var head = document.head;
         var styleElement = document.createElement('style');
@@ -192,6 +233,14 @@
         head.append(styleElement);
 
         $('[data-toggle="tooltip"]').tooltip({ html: true });
+    };
+
+    tempbuttondiv.onmouseover = function () {
+        tempdiv.style.display = "block";
+    };
+
+    tempbuttondiv.onmouseleave = function () {
+        tempdiv.style.display = "none";
     };
 
     // 默认抢座
@@ -211,6 +260,9 @@
         if (document.getElementById("clearbuttonduo")) {
             document.getElementById("clearbuttonduo").remove();
         }
+        if (document.getElementById("groupnobuttonduo")) {
+            document.getElementById("groupnobuttonduo").remove();
+        }
 
         button_user_begin.className = "btn btn-warning disabled";
 
@@ -223,12 +275,21 @@
 
             var seatpanel = document.getElementById("floor").children[1];
             var seatpanel2 = Array.from(seatpanel.children).sort((a, b) => parseInt(a.getAttribute("data-no")) - parseInt(b.getAttribute("data-no")));
-
+            var list = [35,83,131,179];
+            var g = 0;
             var seatnum = seatpanel.childElementCount;
+
             for (i = 0; i < seatnum; i++) {
                 var temp = document.createElement("button");
                 temp.id = "ownseat" + i.toString();
                 temp.setAttribute("state", "0");
+                if(i <= list[g]){
+                    temp.setAttribute("group",g);
+                }
+                else {
+                    temp.setAttribute("group",++g);
+                }
+
                 temp.style.position = "absolute";
                 temp.style.top = seatpanel2[i].style.top;
                 temp.style.left = seatpanel2[i].style.left;
@@ -321,6 +382,96 @@
             document.getElementById("rgyy").nextSibling.nextSibling.nextSibling.remove();
             document.getElementById("rgyy").nextSibling.nextSibling.nextSibling.nextSibling.remove();
 
+            var temp0 = document.createElement("button");
+            temp0.innerHTML="第0组";
+            temp0.id = "btn0-g";
+            temp0.type ="button";
+            temp0.className = "btn btn-info";
+            temp0.style.display = "block";
+            temp0.style.fontSize = "17px";
+            document.getElementById("changeplace").insertBefore(temp0, document.getElementById("rgyy"));
+
+            temp0.onclick = function(){
+                for(i in document.getElementById("floor").children){
+                    if (i != 0 && i != 1 && document.getElementById("floor").children[i].getAttribute("group") == "0") {
+                        document.getElementById("floor").children[i].click();
+                        document.getElementById("floor").children[i].click();
+                    }
+                }
+            }
+            var temp1 = document.createElement("button");
+            temp1.innerHTML="第1组";
+            temp1.id = "btn1-g";
+            temp1.type ="button";
+            temp1.className = "btn btn-info";
+            temp1.style.display = "block";
+            temp1.style.fontSize = "17px";
+            document.getElementById("changeplace").insertBefore(temp1, document.getElementById("rgyy"));
+
+            temp1.onclick = function(){
+                for(i in document.getElementById("floor").children){
+                    if (i != 0 && i != 1 && document.getElementById("floor").children[i].getAttribute("group") == "1") {
+                        document.getElementById("floor").children[i].click();
+                        document.getElementById("floor").children[i].click();
+                    }
+                }
+            }
+
+            var temp2 = document.createElement("button");
+            temp2.innerHTML="第2组";
+            temp2.id = "btn2-g";
+            temp2.type ="button";
+            temp2.className = "btn btn-info";
+            temp2.style.display = "block";
+            temp2.style.fontSize = "17px";
+            document.getElementById("changeplace").insertBefore(temp2, document.getElementById("rgyy"));
+
+            temp2.onclick = function(){
+                for(i in document.getElementById("floor").children){
+                    if (i != 0 && i != 1 && document.getElementById("floor").children[i].getAttribute("group") == "2") {
+                        document.getElementById("floor").children[i].click();
+                        document.getElementById("floor").children[i].click();
+                    }
+                }
+            }
+
+            var temp3 = document.createElement("button");
+            temp3.innerHTML="第3组";
+            temp3.id = "btn3-g";
+            temp3.type ="button";
+            temp3.className = "btn btn-info";
+            temp3.style.display = "block";
+            temp3.style.fontSize = "17px";
+            document.getElementById("changeplace").insertBefore(temp3, document.getElementById("rgyy"));
+
+            temp3.onclick = function(){
+                for(i in document.getElementById("floor").children){
+                    if (i != 0 && i != 1 && document.getElementById("floor").children[i].getAttribute("group") == "3") {
+                        document.getElementById("floor").children[i].click();
+                        document.getElementById("floor").children[i].click();
+                    }
+                }
+            }
+            // for(k = 1; k < 4; k++){
+            //     let temp = document.createElement("button");
+            //     temp.innerHTML = "第"+k.toString()+"组";
+            //     temp.id = "btn" + k.toString();
+            //     temp.type ="button";
+            //     temp.className = "btn btn-info";
+            //     temp.style.display = "block";
+            //     temp.style.fontSize = "17px";
+            //     document.getElementById("changeplace").insertBefore(temp, document.getElementById("rgyy"));
+
+            //     temp.onclick = function(){
+            //         for(i in document.getElementById("floor").children){
+            //             if (i != 0 && i != 1 && document.getElementById("floor").children[i].getAttribute("group") == k.toString()) {
+            //                 document.getElementById("floor").children[j].click();
+            //                 document.getElementById("floor").children[j].click();
+            //             }
+            //         }
+            //     }
+            // }
+
             allnobutton.onclick = function () {
                 for (i in document.getElementById("floor").children) {
                     if (i != 0 && i != 1) {
@@ -356,6 +507,57 @@
             }
         }
     };
+
+    buttonx5A.onclick = function () {
+        timeinterval = prompt("请输入刷新间隔时间，以秒为单位", "1");
+        if (timeinterval == null || timeinterval == "") {
+            window.location.reload();
+        }
+        else {
+            timeinterval = parseInt(timeinterval);
+            console.log("刷新间隔时间：" + timeinterval.toString());
+
+            for (i = 1; i <= 24; i += 1) {
+                ownhate.push(i);
+            }
+            ownlike = [0, 25, 31, 26, 32, 27, 33, 28, 34, 29, 35, 30, 36, 132, 120, 108, 96, 84];
+            for (i = 13; i <= 5 * 11 + 12; i++) {
+                ownlike.push(ownlike[ownlike.length - 5] - 1);
+            }
+
+            console.log("不预约的座位：" + ownhate.slice(1));
+            console.log("优先预约的座位：" + ownlike.slice(1));
+
+            begintimebook();
+        }
+    };
+
+    buttonx5A1.onclick = function () {
+        timeinterval = 1;
+
+        console.log("刷新间隔时间：" + timeinterval.toString());
+
+
+        ownlike = [0, 132, 120, 108, 96, 84];
+        for (i = 1; i <= 5 * 11; i++) {
+            ownlike.push(ownlike[ownlike.length - 5] - 1);
+        }
+
+        for (i = 1; i <= 72; i += 1) {
+            ownhate.push(i);
+        }
+
+        for (i = 133; i <= 180; i += 1) {
+            ownhate.push(i);
+        }
+
+        console.log("不预约的座位：" + ownhate.slice(1));
+        console.log("优先预约的座位：" + ownlike.slice(1));
+
+        begintimebook();
+    };
+
+   
 
     button_stop.onclick = function () {
         clearInterval(time2);
