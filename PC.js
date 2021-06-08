@@ -556,20 +556,7 @@
         begintimebook();
     };
 
-    // buttonb2B.onclick = function () {
-    //     timeinterval = parseInt(prompt("请输入刷新间隔时间，以秒为单位", "1"));
-
-    //     ownhate = [0];
-    //     for (var i = 145; i <= 152; i += 1) {
-    //         ownhate.push(i);
-    //     }
-    //     ownlike = [0, 66, 133, 54, 121, 42, 109, 30, 97];
-
-    //     console.log("不预约的座位：" + ownhate.slice(1));
-    //     console.log("优先预约的座位：" + ownlike.slice(1));
-
-    //     begintimebook();
-    // };
+   
 
     button_stop.onclick = function () {
         clearInterval(time2);
