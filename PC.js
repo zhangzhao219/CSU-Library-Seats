@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         中南大学图书馆自动抢座
+// @name         中南大学图书馆自动抢座（电脑版）
 // @namespace    http://libzw.csu.edu.cn
 // @version      1.1
 // @description  Choosing seats in CSU Library Automatically!
@@ -18,7 +18,6 @@
     var ownlike = [0];
     var i;
     var timeinterval = 1;
-    var g1 = 0;
     var trytimes = 1;
     var time2;
     const bottommessage = document.getElementsByClassName("foots col-xs-12")[0].children[0].innerHTML;
@@ -179,33 +178,6 @@
         button_user_begin.style.display = "block";
         button_user_begin.style.fontSize = "17px";
 
-        // 新校区图书馆5楼A区的座位配置
-        var buttonx5A = document.createElement("button");
-        buttonx5A.innerHTML = "新校五楼A区";
-        buttonx5A.className = "btn btn-default";
-        buttonx5A.setAttribute("data-toggle", "tooltip");
-        buttonx5A.setAttribute("data-placement", "right");
-        buttonx5A.title = "预配置新校五楼A区抢座</br>仅选取有电座位</br>立即开抢";
-        buttonx5A.style.display = "block";
-
-        // 新校区图书馆5楼A区的座位配置（只约空位）
-        var buttonx5A1 = document.createElement("button");
-        buttonx5A1.innerHTML = "新校五楼A区zz";
-        buttonx5A1.className = "btn btn-default";
-        buttonx5A1.setAttribute("data-toggle", "tooltip");
-        buttonx5A1.setAttribute("data-placement", "right");
-        buttonx5A1.title = "预配置新校五楼A区抢座</br>刷新时间1秒</br>仅选取有电无主机座位</br>立即开抢";
-        buttonx5A1.style.display = "block";
-
-        // // 本部图书馆2楼B区的座位配置
-        // var buttonb2B = document.createElement("button");
-        // buttonb2B.innerHTML = "本部二楼B区";
-        // buttonb2B.className = "btn btn-default";
-        // buttonb2B.setAttribute("data-toggle", "tooltip");
-        // buttonb2B.setAttribute("data-placement", "right");
-        // buttonb2B.title = "预配置本部二楼B区抢座</br>仅选取有电座位</br>立即开抢";
-        // buttonb2B.style.display = "block";
-
         // 放置按钮的位置
         var location_to_place_buttons = document.getElementById('nav-date');
 
@@ -214,20 +186,7 @@
 
         location_to_place_buttons.appendChild(button_default_begin);
         location_to_place_buttons.appendChild(button_stop);
-
-        var tempbuttondiv = document.createElement("div");
-
-        tempbuttondiv.appendChild(button_user_begin);
-
-        var tempdiv = document.createElement("div");
-        tempdiv.style.display = "none";
-        tempdiv.appendChild(buttonx5A);
-        tempdiv.appendChild(buttonx5A1);
-        // tempdiv.appendChild(buttonb2B);
-
-        tempbuttondiv.appendChild(tempdiv);
-
-        location_to_place_buttons.appendChild(tempbuttondiv);
+        location_to_place_buttons.appendChild(button_user_begin);
 
         var head = document.head;
         var styleElement = document.createElement('style');
@@ -235,14 +194,6 @@
         head.append(styleElement);
 
         $('[data-toggle="tooltip"]').tooltip({ html: true });
-    };
-
-    tempbuttondiv.onmouseover = function () {
-        tempdiv.style.display = "block";
-    };
-
-    tempbuttondiv.onmouseleave = function () {
-        tempdiv.style.display = "none";
     };
 
     // 默认抢座
@@ -363,21 +314,12 @@
 
             var seatpanel = document.getElementById("floor").children[1];
             var seatpanel2 = Array.from(seatpanel.children).sort((a, b) => parseInt(a.getAttribute("data-no")) - parseInt(b.getAttribute("data-no")));
-            var list = [35,83,131,179];
-            var g = 0;
-            var seatnum = seatpanel.childElementCount;
 
+            var seatnum = seatpanel.childElementCount;
             for (i = 0; i < seatnum; i++) {
                 var temp = document.createElement("button");
                 temp.id = "ownseat" + i.toString();
                 temp.setAttribute("state", "0");
-                if(i <= list[g]){
-                    temp.setAttribute("group",g);
-                }
-                else {
-                    temp.setAttribute("group",++g);
-                }
-
                 temp.style.position = "absolute";
                 temp.style.top = seatpanel2[i].style.top;
                 temp.style.left = seatpanel2[i].style.left;
@@ -474,57 +416,6 @@
             }
         }
     };
-
-    buttonx5A.onclick = function () {
-        timeinterval = prompt("请输入刷新间隔时间，以秒为单位", "1");
-        if (timeinterval == null || timeinterval == "") {
-            window.location.reload();
-        }
-        else {
-            timeinterval = parseInt(timeinterval);
-            console.log("刷新间隔时间：" + timeinterval.toString());
-
-            for (i = 1; i <= 24; i += 1) {
-                ownhate.push(i);
-            }
-            ownlike = [0, 25, 31, 26, 32, 27, 33, 28, 34, 29, 35, 30, 36, 132, 120, 108, 96, 84];
-            for (i = 13; i <= 5 * 11 + 12; i++) {
-                ownlike.push(ownlike[ownlike.length - 5] - 1);
-            }
-
-            console.log("不预约的座位：" + ownhate.slice(1));
-            console.log("优先预约的座位：" + ownlike.slice(1));
-
-            begintimebook();
-        }
-    };
-
-    buttonx5A1.onclick = function () {
-        timeinterval = 1;
-
-        console.log("刷新间隔时间：" + timeinterval.toString());
-
-
-        ownlike = [0, 132, 120, 108, 96, 84];
-        for (i = 1; i <= 5 * 11; i++) {
-            ownlike.push(ownlike[ownlike.length - 5] - 1);
-        }
-
-        for (i = 1; i <= 72; i += 1) {
-            ownhate.push(i);
-        }
-
-        for (i = 133; i <= 180; i += 1) {
-            ownhate.push(i);
-        }
-
-        console.log("不预约的座位：" + ownhate.slice(1));
-        console.log("优先预约的座位：" + ownlike.slice(1));
-
-        begintimebook();
-    };
-
-   
 
     button_stop.onclick = function () {
         clearInterval(time2);
