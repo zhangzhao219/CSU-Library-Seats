@@ -1,19 +1,21 @@
 // ==UserScript==
 // @name         中南大学图书馆自动抢座（电脑版）
 // @namespace    http://libzw.csu.edu.cn
-// @version      1.0
+// @version      1.1
 // @description  Choosing seats in CSU Library Automatically!
-// @author       Zhang Zhao
+// @author       Zhang Zhao, Li Junda
 // @homepage     https://github.com/zhangzhao219/CSU-Library-Seats
 // @match        http://libzw.csu.edu.cn/web/seat3*
 // @grant        none
 // ==/UserScript==
 
 (function () {
+    $("head").append($(`<link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-switch/3.3.4/css/bootstrap3/bootstrap-switch.min.css"
+    rel="stylesheet">`));
+    $("head").append($(`<script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-switch/3.3.4/js/bootstrap-switch.min.js"></script>`));
 
     var ownhate = [0];
     var ownlike = [0];
-    var ownliketempseat, ownhatetempseat;
     var i;
     var timeinterval = 1;
     var trytimes = 1;
@@ -201,18 +203,107 @@
 
     // 自由抢座
     button_user_begin.onclick = function () {
-        document.getElementsByClassName("foots col-xs-12")[0].children[0].innerHTML = "自由抢座模式&#8658;&#8727;点击灰色为不预约的座位&#8727;点击绿色为优先预约的座位&#8727;";
-        if (document.getElementById("enterbuttonduo")) {
-            document.getElementById("enterbuttonduo").remove();
+
+        // 标记现在是选择优先的还是禁止的，默认是禁止的，为0，1为优先的
+        var choosestatus = 0;
+        // 更新按钮状态
+        function update(){
+            for (i in document.getElementById("floor").children) {
+                var tempnode = document.getElementById("floor").children[i];
+                if (tempnode.nodeName == "BUTTON") {
+                    
+                    if(tempnode.getAttribute("state") == 0){
+                        tempnode.style.backgroundColor = "rgba(255,48,48,0.1)";
+                    }
+                    else if(tempnode.getAttribute("state") == 1){
+                        tempnode.style.backgroundColor = "rgba(51,122,183,0.8)";
+                    }
+                    else{
+                        tempnode.style.backgroundColor = "rgba(0,255,0,0.9)";
+                    }
+                    
+                }
+            }
         }
-        if (document.getElementById("allnobuttonduo")) {
-            document.getElementById("allnobuttonduo").remove();
-        }
+        button_user_begin.title = "刷选模式";
+        button_user_begin.remove();
+        document.getElementsByClassName("foots col-xs-12")[0].children[0].innerHTML = "自由抢座模式&#8658;&#8727;可自由刷选可点击&#8727;蓝色为不预约的座位&#8727;绿色为优先预约的座位&#8727;";
         if (document.getElementById("clearbuttonduo")) {
             document.getElementById("clearbuttonduo").remove();
         }
+        if (document.getElementById("enterbuttonduo")) {
+            document.getElementById("enterbuttonduo").remove();
+        }
+        document.addEventListener("mousedown", function (e) {
+            this.body.style.cursor = "crosshair";
+            //鼠标按下时，生成一个div
+            var owndiv = document.createElement("div");
+            owndiv.id = "owndivdelete";
+            owndiv.style.position = "fixed";
+            owndiv.style.borderColor = "red";
+            owndiv.style.borderWidth = "2px";
+            owndiv.style.borderStyle = "solid";
+            document.body.appendChild(owndiv);
 
-        button_user_begin.className = "btn btn-warning disabled";
+            //获取鼠标开始拖动的起始位置
+            let startPos = {};
+            startPos.x = e.clientX;
+            startPos.y = e.clientY;
+
+            function move(e) {
+                let curPos = {};
+                curPos.x = e.clientX;
+                curPos.y = e.clientY;
+                //div 的left和top：如果鼠标当前位置>鼠标起始位置，则为鼠标起始位置（鼠标往右拉）；如果鼠标当前位置<鼠标起始位置，则为鼠标当前位置(鼠标往左拉)
+                owndiv.style.left = Math.min(startPos.x, curPos.x) + 'px';
+                owndiv.style.top = Math.min(startPos.y, curPos.y) + 'px';
+
+                //通过当前坐标x/y-鼠标起始坐标x/y得到要生成的div的宽度 ，如果往左拉，鼠标当前坐标-起始坐标可能为负数，所以，需要使用绝对值函数Math.abs()
+                owndiv.style.width = Math.abs(curPos.x - startPos.x) + 'px';
+                owndiv.style.height = Math.abs(curPos.y - startPos.y) + 'px';
+
+                document.body.appendChild(owndiv);
+            }
+            //鼠标按下移动时动态获取鼠标位置
+            document.addEventListener("mousemove", move);
+            //鼠标放下时，停止生成画框
+            document.addEventListener("mouseup", function () {
+                document.removeEventListener("mousemove", move);
+                if (document.getElementById("owndivdelete")) {
+                    var tempdiv = document.getElementById("owndivdelete");
+                    if(tempdiv.style.left != NaN && tempdiv.style.top != NaN){
+
+                        var tempdivleft = tempdiv.getBoundingClientRect().left;
+                        var tempdivtop = tempdiv.getBoundingClientRect().top;
+                        var tempdivright = tempdiv.getBoundingClientRect().right;
+                        var tempdivbottom = tempdiv.getBoundingClientRect().bottom;
+
+                        for (i in document.getElementById("floor").children) {
+                            var tempnode = document.getElementById("floor").children[i];
+                            if (tempnode.nodeName == "BUTTON") {
+                                var centerx = (tempnode.getBoundingClientRect().left + tempnode.getBoundingClientRect().right)/2;
+                                var centery = (tempnode.getBoundingClientRect().top + tempnode.getBoundingClientRect().bottom)/2;
+                                // console.log(tempdivleft,tempdivright,tempdivtop,tempdivbottom);
+                                if(centerx >= tempdivleft && centerx <= tempdivright && centery >= tempdivtop && centery <= tempdivbottom){
+                                    if(choosestatus == 0){
+                                        tempnode.setAttribute("state", "1");  
+                                    }
+                                    else{
+                                        tempnode.setAttribute("state", "2");
+                                    }
+                                    update(); 
+                                }
+                            }
+                        }                      
+                    }
+                    tempdiv.remove();
+                    this.body.style.cursor = "default";
+                }
+            }, {
+                once: true
+            });
+
+        });
 
         timeinterval = prompt("请输入刷新间隔时间，以秒为单位", "1");
         if (timeinterval == null || timeinterval == "") {
@@ -238,67 +329,42 @@
                 document.getElementById("floor").appendChild(temp);
 
                 temp.onclick = function () {
-                    var tempid = parseInt(this.id.slice(7));
-                    if (this.getAttribute("state") == 0) {
-                        this.style.backgroundColor = "rgba(54,54,54,0.9)";
+                    if(this.getAttribute("state") == 0){
                         this.setAttribute("state", "1");
-                        ownliketempseat = ownlike.indexOf(tempid);
-                        if (ownliketempseat > -1) {
-                            ownlike = ownlike.filter(function (item) {
-                                return item != tempid;
-                            });
-                        }
-                        ownhatetempseat = ownhate.indexOf(parseInt(this.id.slice(7)));
-                        if (ownhatetempseat > -1) {
-                            ownhate = ownhate.filter(function (item) {
-                                return item != tempid;
-                            });
-                        }
-                        ownhate.push(parseInt(this.id.slice(7)));
                     }
-                    else if (this.getAttribute("state") == 1) {
-                        this.style.backgroundColor = "rgba(0,255,0,0.9)";
+                    else if(this.getAttribute("state") == 1){
                         this.setAttribute("state", "2");
-                        ownliketempseat = ownlike.indexOf(tempid);
-                        if (ownliketempseat > -1) {
-                            ownlike = ownlike.filter(function (item) {
-                                return item != tempid;
-                            });
-                        }
-                        ownhatetempseat = ownhate.indexOf(tempid);
-                        if (ownhatetempseat > -1) {
-                            ownhate = ownhate.filter(function (item) {
-                                return item != tempid;
-                            });
-                        }
-                        ownlike.push(tempid);
                     }
-                    else if (this.getAttribute("state") == 2) {
-                        this.style.backgroundColor = "rgba(255,48,48,0.1)";
+                    else{
                         this.setAttribute("state", "0");
-                        ownliketempseat = ownlike.indexOf(tempid);
-                        if (ownliketempseat > -1) {
-                            ownlike = ownlike.filter(function (item) {
-                                return item != tempid;
-                            });
-                        }
-                        ownhatetempseat = ownhate.indexOf(tempid);
-                        if (ownhatetempseat > -1) {
-                            ownhate = ownhate.filter(function (item) {
-                                return item != tempid;
-                            });
-                        }
                     }
+                    update();
                 }
             }
-            var allnobutton = document.createElement("button");
-            allnobutton.innerHTML = "全选";
-            allnobutton.type = "button";
-            allnobutton.className = "btn btn-info";
-            allnobutton.id = "allnobuttonduo";
-            allnobutton.style.display = "block";
-            allnobutton.style.fontSize = "17px";
-            document.getElementById("changeplace").insertBefore(allnobutton, document.getElementById("rgyy"));
+
+            var choosebutton = document.createElement("input");
+            choosebutton.type = "checkbox";
+            choosebutton.id = "checkbox";
+            location_to_place_buttons.appendChild(choosebutton);
+
+            $("#checkbox").bootstrapSwitch({
+                onText: "优先",      // 设置ON文本  
+                offText: "禁止",    // 设置OFF文本  
+                onColor: "success",// 设置ON文本颜色     (info/success/warning/danger/primary)  
+                offColor: "primary",  // 设置OFF文本颜色        (info/success/warning/danger/primary)  
+                size: "normal",    // 设置控件大小,从小到大  (mini/small/normal/large)  
+                // 当开关状态改变时触发  
+                onSwitchChange: function (event, state) {
+                    if (state == true) {
+                        choosestatus = 1;
+                    } else {
+                        choosestatus = 0;
+                    }
+                }
+            });
+
+            document.getElementsByClassName("bootstrap-switch-off")[0].style.display = "block";
+            document.getElementsByClassName("tooltip-inner")[0].innerText = "刷选模式"
 
             var clearbutton = document.createElement("button");
             clearbutton.innerHTML = "清空";
@@ -321,33 +387,27 @@
             document.getElementById("rgyy").nextSibling.nextSibling.nextSibling.remove();
             document.getElementById("rgyy").nextSibling.nextSibling.nextSibling.nextSibling.remove();
 
-            allnobutton.onclick = function () {
-                for (i in document.getElementById("floor").children) {
-                    if (i != 0 && i != 1) {
-                        document.getElementById("floor").children[i].click();
-                    }
-                }
-            }
+
             clearbutton.onclick = function () {
                 for (i in document.getElementById("floor").children) {
-                    if (i != 0 && i != 1) {
-                        if (document.getElementById("floor").children[i].getAttribute("state") == 1) {
-                            document.getElementById("floor").children[i].click();
-                            document.getElementById("floor").children[i].click();
-                        }
-                        else if (document.getElementById("floor").children[i].getAttribute("state") == 2) {
-                            document.getElementById("floor").children[i].click();
-                        }
+                    if (document.getElementById("floor").children[i].nodeName == "BUTTON") {
+                        document.getElementById("floor").children[i].setAttribute("state",0);
                     }
                 }
+                update();
             }
 
             enterbutton.onclick = function () {
-                for (i in ownlike) {
-                    ownlike[i] += 1;
-                }
-                for (i in ownhate) {
-                    ownhate[i] += 1;
+                for (i in document.getElementById("floor").children) {
+                    var tempnode = document.getElementById("floor").children[i];
+                    if (tempnode.nodeName == "BUTTON") {
+                        if(tempnode.getAttribute("state") == 1){
+                            ownhate.push(parseInt(tempnode.id.slice(7)) + 1);
+                        }
+                        else if(tempnode.getAttribute("state") == 2){
+                            ownlike.push(parseInt(tempnode.id.slice(7)) + 1);
+                        }
+                    }
                 }
                 console.log("不预约的座位：" + ownhate.slice(1));
                 console.log("优先预约的座位：" + ownlike.slice(1));
