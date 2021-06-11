@@ -10,6 +10,7 @@
 // ==/UserScript==
 
 (function () {
+    pageTimer.stop();
     $("head").append($(`<link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-switch/3.3.4/css/bootstrap3/bootstrap-switch.min.css"
     rel="stylesheet">`));
     $("head").append($(`<script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-switch/3.3.4/js/bootstrap-switch.min.js"></script>`));
