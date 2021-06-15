@@ -306,22 +306,17 @@
 
         });
 
-        timeinterval = layer.prompt({
+        layer.prompt({
             formType: 0,
             value: '1',
             title: '请输入刷新间隔时间，以秒为单位',
-            area: ['200px', '100px'] //自定义文本域宽高
-        }, function (index) {
+            area: ['200px', '100px'],
+            function() {
+                window.location.reload();
+            }
+        }, function (value, index, elem) {
             layer.close(index);
-        }, function (index) {
-            layer.close(index);
-            window.location.reload();
-        });
-        if (timeinterval == null || timeinterval == "") {
-            window.location.reload();
-        }
-        else {
-            timeinterval = parseInt(timeinterval);
+            timeinterval = parseInt(value);
 
             var seatpanel = document.getElementById("floor").children[1];
             var seatpanel2 = Array.from(seatpanel.children).sort((a, b) => parseInt(a.getAttribute("data-no")) - parseInt(b.getAttribute("data-no")));
@@ -425,7 +420,7 @@
 
                 begintimebook();
             }
-        }
+        });
     };
 
     button_stop.onclick = function () {
