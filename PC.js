@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         中南大学图书馆自动抢座（电脑版）
 // @namespace    http://libzw.csu.edu.cn
-// @version      1.1
+// @version      1.2
 // @description  Choosing seats in CSU Library Automatically!
 // @author       Zhang Zhao, Li Junda
 // @homepage     https://github.com/zhangzhao219/CSU-Library-Seats
@@ -124,10 +124,13 @@
         }
         console.log((timeactual / 1000).toString() + "秒后开始预约！");
 
-        var a = layer.confirm("在 " + timebutton.value + " 开始抢座！请确认！", {icon: 3, title:'提示'}, function(index){
+        layer.confirm("在 " + timebutton.value + " 开始抢座！请确认！", { icon: 3, title: '提示' }, function (index) {
+            layer.close(index);
             setTimeout(wait, timeactual);
-  layer.close(index);
-});
+        }, function (index) {
+            layer.close(index);
+            window.location.reload();
+        });
     };
 
     if (document.getElementsByClassName("login-control")[0].style.display == "none") {
@@ -308,8 +311,11 @@
             value: '1',
             title: '请输入刷新间隔时间，以秒为单位',
             area: ['200px', '100px'] //自定义文本域宽高
-        }, function (value, index, elem) {
+        }, function (index) {
             layer.close(index);
+        }, function (index) {
+            layer.close(index);
+            window.location.reload();
         });
         if (timeinterval == null || timeinterval == "") {
             window.location.reload();
