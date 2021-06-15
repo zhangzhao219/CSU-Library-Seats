@@ -311,7 +311,7 @@
             value: '1',
             title: '请输入刷新间隔时间，以秒为单位',
             area: ['200px', '100px'],
-            function() {
+            btn2: function () {
                 window.location.reload();
             }
         }, function (value, index, elem) {
