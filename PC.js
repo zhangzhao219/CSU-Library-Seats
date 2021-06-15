@@ -10,10 +10,10 @@
 // ==/UserScript==
 
 (function () {
-    pageTimer.stop();
     $("head").append($(`<link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-switch/3.3.4/css/bootstrap3/bootstrap-switch.min.css"
     rel="stylesheet">`));
     $("head").append($(`<script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-switch/3.3.4/js/bootstrap-switch.min.js"></script>`));
+    $("head").append($(`<script src="https://cdn.bootcdn.net/ajax/libs/layer/3.5.1/layer.min.js"></script>`));
 
     var ownhate = [0];
     var ownlike = [0];
@@ -124,13 +124,10 @@
         }
         console.log((timeactual / 1000).toString() + "秒后开始预约！");
 
-        var a = window.confirm("在 " + timebutton.value + " 开始抢座！请确认！");
-        if (a == true) {
+        var a = layer.confirm("在 " + timebutton.value + " 开始抢座！请确认！", {icon: 3, title:'提示'}, function(index){
             setTimeout(wait, timeactual);
-        }
-        else {
-            window.location.reload();
-        }
+  layer.close(index);
+});
     };
 
     if (document.getElementsByClassName("login-control")[0].style.display == "none") {
@@ -208,21 +205,21 @@
         // 标记现在是选择优先的还是禁止的，默认是禁止的，为0，1为优先的
         var choosestatus = 0;
         // 更新按钮状态
-        function update(){
+        function update() {
             for (i in document.getElementById("floor").children) {
                 var tempnode = document.getElementById("floor").children[i];
                 if (tempnode.nodeName == "BUTTON") {
-                    
-                    if(tempnode.getAttribute("state") == 0){
+
+                    if (tempnode.getAttribute("state") == 0) {
                         tempnode.style.backgroundColor = "rgba(255,48,48,0.1)";
                     }
-                    else if(tempnode.getAttribute("state") == 1){
+                    else if (tempnode.getAttribute("state") == 1) {
                         tempnode.style.backgroundColor = "rgba(51,122,183,0.8)";
                     }
-                    else{
+                    else {
                         tempnode.style.backgroundColor = "rgba(0,255,0,0.9)";
                     }
-                    
+
                 }
             }
         }
@@ -272,7 +269,7 @@
                 document.removeEventListener("mousemove", move);
                 if (document.getElementById("owndivdelete")) {
                     var tempdiv = document.getElementById("owndivdelete");
-                    if(tempdiv.style.left != NaN && tempdiv.style.top != NaN){
+                    if (tempdiv.style.left != NaN && tempdiv.style.top != NaN) {
 
                         var tempdivleft = tempdiv.getBoundingClientRect().left;
                         var tempdivtop = tempdiv.getBoundingClientRect().top;
@@ -282,20 +279,20 @@
                         for (i in document.getElementById("floor").children) {
                             var tempnode = document.getElementById("floor").children[i];
                             if (tempnode.nodeName == "BUTTON") {
-                                var centerx = (tempnode.getBoundingClientRect().left + tempnode.getBoundingClientRect().right)/2;
-                                var centery = (tempnode.getBoundingClientRect().top + tempnode.getBoundingClientRect().bottom)/2;
+                                var centerx = (tempnode.getBoundingClientRect().left + tempnode.getBoundingClientRect().right) / 2;
+                                var centery = (tempnode.getBoundingClientRect().top + tempnode.getBoundingClientRect().bottom) / 2;
                                 // console.log(tempdivleft,tempdivright,tempdivtop,tempdivbottom);
-                                if(centerx >= tempdivleft && centerx <= tempdivright && centery >= tempdivtop && centery <= tempdivbottom){
-                                    if(choosestatus == 0){
-                                        tempnode.setAttribute("state", "1");  
+                                if (centerx >= tempdivleft && centerx <= tempdivright && centery >= tempdivtop && centery <= tempdivbottom) {
+                                    if (choosestatus == 0) {
+                                        tempnode.setAttribute("state", "1");
                                     }
-                                    else{
+                                    else {
                                         tempnode.setAttribute("state", "2");
                                     }
-                                    update(); 
+                                    update();
                                 }
                             }
-                        }                      
+                        }
                     }
                     tempdiv.remove();
                     this.body.style.cursor = "default";
@@ -306,7 +303,14 @@
 
         });
 
-        timeinterval = prompt("请输入刷新间隔时间，以秒为单位", "1");
+        timeinterval = layer.prompt({
+            formType: 0,
+            value: '1',
+            title: '请输入刷新间隔时间，以秒为单位',
+            area: ['200px', '100px'] //自定义文本域宽高
+        }, function (value, index, elem) {
+            layer.close(index);
+        });
         if (timeinterval == null || timeinterval == "") {
             window.location.reload();
         }
@@ -330,13 +334,13 @@
                 document.getElementById("floor").appendChild(temp);
 
                 temp.onclick = function () {
-                    if(this.getAttribute("state") == 0){
+                    if (this.getAttribute("state") == 0) {
                         this.setAttribute("state", "1");
                     }
-                    else if(this.getAttribute("state") == 1){
+                    else if (this.getAttribute("state") == 1) {
                         this.setAttribute("state", "2");
                     }
-                    else{
+                    else {
                         this.setAttribute("state", "0");
                     }
                     update();
@@ -349,12 +353,12 @@
             location_to_place_buttons.appendChild(choosebutton);
 
             $("#checkbox").bootstrapSwitch({
-                onText: "优先",      // 设置ON文本  
-                offText: "禁止",    // 设置OFF文本  
-                onColor: "success",// 设置ON文本颜色     (info/success/warning/danger/primary)  
-                offColor: "primary",  // 设置OFF文本颜色        (info/success/warning/danger/primary)  
-                size: "normal",    // 设置控件大小,从小到大  (mini/small/normal/large)  
-                // 当开关状态改变时触发  
+                onText: "优先",      // 设置ON文本
+                offText: "禁止",    // 设置OFF文本
+                onColor: "success",// 设置ON文本颜色     (info/success/warning/danger/primary)
+                offColor: "primary",  // 设置OFF文本颜色        (info/success/warning/danger/primary)
+                size: "normal",    // 设置控件大小,从小到大  (mini/small/normal/large)
+                // 当开关状态改变时触发
                 onSwitchChange: function (event, state) {
                     if (state == true) {
                         choosestatus = 1;
@@ -392,7 +396,7 @@
             clearbutton.onclick = function () {
                 for (i in document.getElementById("floor").children) {
                     if (document.getElementById("floor").children[i].nodeName == "BUTTON") {
-                        document.getElementById("floor").children[i].setAttribute("state",0);
+                        document.getElementById("floor").children[i].setAttribute("state", 0);
                     }
                 }
                 update();
@@ -402,10 +406,10 @@
                 for (i in document.getElementById("floor").children) {
                     var tempnode = document.getElementById("floor").children[i];
                     if (tempnode.nodeName == "BUTTON") {
-                        if(tempnode.getAttribute("state") == 1){
+                        if (tempnode.getAttribute("state") == 1) {
                             ownhate.push(parseInt(tempnode.id.slice(7)) + 1);
                         }
-                        else if(tempnode.getAttribute("state") == 2){
+                        else if (tempnode.getAttribute("state") == 2) {
                             ownlike.push(parseInt(tempnode.id.slice(7)) + 1);
                         }
                     }
