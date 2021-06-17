@@ -5,8 +5,7 @@
 // @description  Choosing seats in CSU Library Automatically!
 // @author       Zhang Zhao, Li Junda
 // @homepage     https://github.com/zhangzhao219/CSU-Library-Seats
-// @match        http://libzw.csu.edu.cn/web*
-// @match        http://libzw.csu.edu.cn/home/web*
+// @match        http://libzw.csu.edu.cn/web/seat3*
 // @grant        none
 // ==/UserScript==
 
@@ -26,8 +25,8 @@
     const bottommessage = document.getElementsByClassName("foots col-xs-12")[0].children[0].innerHTML;
     var mp = {
         43: 1486519, 41: 1492504, 42: 1493701, 44: 1502080, 45: 1503277, 46: 1504474, 47: 1505671, 48: 1496095, 49: 1514050, 50: 1515247
-        , 51: 1516444, 52: 1517641, 53: 1518838, 54: 1508065,55:1522431,56:1523629,57:1524827,58:1526025,59:1520035,60:1534411,61:1535609
-        ,62:1536807,63:1538005,64:1539203,65:1528421,66:1546391,67:1547589,68:1548787,69:1549985,70:1541599
+        , 51: 1516444, 52: 1517641, 53: 1518838, 54: 1508065, 55: 1522431, 56: 1523629, 57: 1524827, 58: 1526025, 59: 1520035, 60: 1534411, 61: 1535609
+        , 62: 1536807, 63: 1538005, 64: 1539203, 65: 1528421, 66: 1546391, 67: 1547589, 68: 1548787, 69: 1549985, 70: 1541599
     };
 
     function beginbook() {
@@ -87,6 +86,7 @@
                 'type': 1
             }, function (data) {
                 if (data.status == 1) {
+                    ed = 1;
                     console.log("预约成功 " + (parseInt(canbooklist[0]) + 1).toString() + " 号座位");
                     var bookInfo = data.data.list;
                     var bookTipInfo = '';
@@ -111,16 +111,15 @@
                         cancel: false
                     }).showModal();
                     button_stop.click();
-                    ed++;
                 }
             })
         }
     };
 
     function allCheck() {
-        while(ed !== 0){
+        while(ed == 0){
             for (var key in mp) {
-                window.location.assign("http://libzw.csu.edu.cn/web/seat3?area=" + key + "&segment=" + mp[key] + "&day=2021-6-17&startTime=" + ska.startTime + "&endTime=22:00");
+                window.location.assign("http://libzw.csu.edu.cn/web/seat3?area=" + key + "&segment=" + mp[key] +"&day=" + ska.day +"&startTime=" + ska.startTime + "&endTime=22:00");
                 beginbook();
             }
         }
@@ -170,7 +169,7 @@
         button_default_begin.className = "btn btn-success";
         button_default_begin.setAttribute("data-toggle", "tooltip");
         button_default_begin.setAttribute("data-placement", "right");
-        button_default_begin.title = "按照默认配置抢座</br>刷新时间1秒</br>无优先座位与禁止座位</br>仅在选座区域有效";
+        button_default_begin.title = "按照默认配置抢座</br>刷新时间1秒</br>无优先座位与禁止座位";
         button_default_begin.style.display = "block";
         button_default_begin.style.fontSize = "17px";
 
@@ -181,7 +180,7 @@
         button_default_all.className = "btn btn-success";
         button_default_all.setAttribute("data-toggle", "tooltip");
         button_default_all.setAttribute("data-placement", "right");
-        button_default_all.title = "按照全选配置抢座</br>刷新时间1秒</br>无优先座位与禁止座位</br>仅选取今天座位";
+        button_default_all.title = "按照全选配置抢座</br>刷新时间1秒</br>无优先座位与禁止座位";
         button_default_all.style.display = "block";
         button_default_all.style.fontSize = "17px";
 
