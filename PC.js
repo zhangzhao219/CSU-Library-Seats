@@ -181,7 +181,7 @@
         button_default_all.className = "btn btn-success";
         button_default_all.setAttribute("data-toggle", "tooltip");
         button_default_all.setAttribute("data-placement", "right");
-        button_default_all.title = "按照全选配置抢座</br>刷新时间1秒</br>无优先座位与禁止座位";
+        button_default_all.title = "按照全选配置抢座</br>刷新时间1秒</br>无优先座位与禁止座位</br>仅选取今天座位";
         button_default_all.style.display = "block";
         button_default_all.style.fontSize = "17px";
 
