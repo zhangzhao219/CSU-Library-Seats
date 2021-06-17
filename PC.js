@@ -1,11 +1,12 @@
 // ==UserScript==
-// @name         中南大学图书馆自动抢座（电脑版）
+// @name         中南大学图书馆自动抢座（zz电脑版）
 // @namespace    http://libzw.csu.edu.cn
-// @version      1.1
+// @version      1.2
 // @description  Choosing seats in CSU Library Automatically!
 // @author       Zhang Zhao, Li Junda
 // @homepage     https://github.com/zhangzhao219/CSU-Library-Seats
-// @match        http://libzw.csu.edu.cn/web/seat3*
+// @match        http://libzw.csu.edu.cn/web*
+// @match        http://libzw.csu.edu.cn/home/web*
 // @grant        none
 // ==/UserScript==
 
@@ -21,7 +22,13 @@
     var timeinterval = 1;
     var trytimes = 1;
     var time2;
+    var ed = 0;
     const bottommessage = document.getElementsByClassName("foots col-xs-12")[0].children[0].innerHTML;
+    var mp = {
+        43: 1486519, 41: 1492504, 42: 1493701, 44: 1502080, 45: 1503277, 46: 1504474, 47: 1505671, 48: 1496095, 49: 1514050, 50: 1515247
+        , 51: 1516444, 52: 1517641, 53: 1518838, 54: 1508065,55:1522431,56:1523629,57:1524827,58:1526025,59:1520035,60:1534411,61:1535609
+        ,62:1536807,63:1538005,64:1539203,65:1528421,66:1546391,67:1547589,68:1548787,69:1549985,70:1541599
+    };
 
     function beginbook() {
         document.getElementsByClassName("foots col-xs-12")[0].children[0].innerHTML = "正在抢座，请稍作等待......";
@@ -104,10 +111,20 @@
                         cancel: false
                     }).showModal();
                     button_stop.click();
+                    ed++;
                 }
             })
         }
     };
+
+    function allCheck() {
+        while(ed !== 0){
+            for (var key in mp) {
+                window.location.assign("http://libzw.csu.edu.cn/web/seat3?area=" + key + "&segment=" + mp[key] + "&day=2021-6-17&startTime=" + ska.startTime + "&endTime=22:00");
+                beginbook();
+            }
+        }
+    }
 
     function wait() {
         time2 = setInterval(beginbook, timeinterval * 1000);
@@ -124,10 +141,13 @@
         }
         console.log((timeactual / 1000).toString() + "秒后开始预约！");
 
-        var a = layer.confirm("在 " + timebutton.value + " 开始抢座！请确认！", {icon: 3, title:'提示'}, function(index){
+        layer.confirm("在 " + timebutton.value + " 开始抢座！请确认！", { icon: 3, title: '提示' }, function (index) {
+            layer.close(index);
             setTimeout(wait, timeactual);
-  layer.close(index);
-});
+        }, function (index) {
+            layer.close(index);
+            window.location.reload();
+        });
     };
 
     if (document.getElementsByClassName("login-control")[0].style.display == "none") {
@@ -145,7 +165,7 @@
 
         // 默认配置抢座的按钮
         var button_default_begin = document.createElement("button");
-        button_default_begin.innerHTML = "默认抢座";
+        button_default_begin.innerHTML = "区域默认抢座";
         button_default_begin.type = "button";
         button_default_begin.className = "btn btn-success";
         button_default_begin.setAttribute("data-toggle", "tooltip");
@@ -154,6 +174,16 @@
         button_default_begin.style.display = "block";
         button_default_begin.style.fontSize = "17px";
 
+        // 默认全选抢座的按钮
+        var button_default_all = document.createElement("button");
+        button_default_all.innerHTML = "全馆抢座";
+        button_default_all.type = "button";
+        button_default_all.className = "btn btn-success";
+        button_default_all.setAttribute("data-toggle", "tooltip");
+        button_default_all.setAttribute("data-placement", "right");
+        button_default_all.title = "按照全选配置抢座</br>刷新时间1秒</br>无优先座位与禁止座位";
+        button_default_all.style.display = "block";
+        button_default_all.style.fontSize = "17px";
 
         // 停止抢座的按钮
         var button_stop = document.createElement("button");
@@ -168,7 +198,7 @@
 
         // 自由配置抢座的按钮
         var button_user_begin = document.createElement("button");
-        button_user_begin.innerHTML = "自由抢座";
+        button_user_begin.innerHTML = "区域自由抢座";
         button_user_begin.className = "btn btn-warning";
         button_user_begin.setAttribute("data-toggle", "tooltip");
         button_user_begin.setAttribute("data-placement", "right");
@@ -176,15 +206,57 @@
         button_user_begin.style.display = "block";
         button_user_begin.style.fontSize = "17px";
 
+        // 新校区图书馆5楼A区的座位配置
+        var buttonx5A = document.createElement("button");
+        buttonx5A.innerHTML = "新校五楼A区";
+        buttonx5A.className = "btn btn-default";
+        buttonx5A.setAttribute("data-toggle", "tooltip");
+        buttonx5A.setAttribute("data-placement", "right");
+        buttonx5A.title = "预配置新校五楼A区抢座</br>仅选取有电座位</br>立即开抢";
+        buttonx5A.style.display = "block";
+
+        // 新校区图书馆5楼A区的座位配置（只约空位）
+        var buttonx5A1 = document.createElement("button");
+        buttonx5A1.innerHTML = "新校五楼A区zz";
+        buttonx5A1.className = "btn btn-default";
+        buttonx5A1.setAttribute("data-toggle", "tooltip");
+        buttonx5A1.setAttribute("data-placement", "right");
+        buttonx5A1.title = "预配置新校五楼A区抢座</br>刷新时间1秒</br>仅选取有电无主机座位</br>立即开抢";
+        buttonx5A1.style.display = "block";
+
+        // // 本部图书馆2楼B区的座位配置
+        // var buttonb2B = document.createElement("button");
+        // buttonb2B.innerHTML = "本部二楼B区";
+        // buttonb2B.className = "btn btn-default";
+        // buttonb2B.setAttribute("data-toggle", "tooltip");
+        // buttonb2B.setAttribute("data-placement", "right");
+        // buttonb2B.title = "预配置本部二楼B区抢座</br>仅选取有电座位</br>立即开抢";
+        // buttonb2B.style.display = "block";
+
         // 放置按钮的位置
         var location_to_place_buttons = document.getElementById('nav-date');
+
 
         // 先增加时间框
         location_to_place_buttons.appendChild(timebutton);
 
         location_to_place_buttons.appendChild(button_default_begin);
+        location_to_place_buttons.appendChild(button_default_all);
         location_to_place_buttons.appendChild(button_stop);
-        location_to_place_buttons.appendChild(button_user_begin);
+
+        var tempbuttondiv = document.createElement("div");
+
+        tempbuttondiv.appendChild(button_user_begin);
+
+        var tempdiv = document.createElement("div");
+        tempdiv.style.display = "none";
+        tempdiv.appendChild(buttonx5A);
+        tempdiv.appendChild(buttonx5A1);
+        // tempdiv.appendChild(buttonb2B);
+
+        tempbuttondiv.appendChild(tempdiv);
+
+        location_to_place_buttons.appendChild(tempbuttondiv);
 
         var head = document.head;
         var styleElement = document.createElement('style');
@@ -194,9 +266,22 @@
         $('[data-toggle="tooltip"]').tooltip({ html: true });
     };
 
+    tempbuttondiv.onmouseover = function () {
+        tempdiv.style.display = "block";
+    };
+
+    tempbuttondiv.onmouseleave = function () {
+        tempdiv.style.display = "none";
+    };
+
     // 默认抢座
     button_default_begin.onclick = function () {
         begintimebook();
+    };
+
+    // 全选抢座
+    button_default_all.onclick = function () {
+        allCheck();
     };
 
     // 自由抢座
@@ -225,6 +310,7 @@
         }
         button_user_begin.title = "刷选模式";
         button_user_begin.remove();
+        tempdiv.remove();
         document.getElementsByClassName("foots col-xs-12")[0].children[0].innerHTML = "自由抢座模式&#8658;&#8727;可自由刷选可点击&#8727;蓝色为不预约的座位&#8727;绿色为优先预约的座位&#8727;";
         if (document.getElementById("clearbuttonduo")) {
             document.getElementById("clearbuttonduo").remove();
@@ -303,19 +389,17 @@
 
         });
 
-        timeinterval = layer.prompt({
+        layer.prompt({
             formType: 0,
             value: '1',
             title: '请输入刷新间隔时间，以秒为单位',
-            area: ['200px', '100px'] //自定义文本域宽高
+            area: ['200px', '100px'],
+            btn2: function () {
+                window.location.reload();
+            }
         }, function (value, index, elem) {
             layer.close(index);
-        });
-        if (timeinterval == null || timeinterval == "") {
-            window.location.reload();
-        }
-        else {
-            timeinterval = parseInt(timeinterval);
+            timeinterval = parseInt(value);
 
             var seatpanel = document.getElementById("floor").children[1];
             var seatpanel2 = Array.from(seatpanel.children).sort((a, b) => parseInt(a.getAttribute("data-no")) - parseInt(b.getAttribute("data-no")));
@@ -353,12 +437,12 @@
             location_to_place_buttons.appendChild(choosebutton);
 
             $("#checkbox").bootstrapSwitch({
-                onText: "优先",      // 设置ON文本
-                offText: "禁止",    // 设置OFF文本
-                onColor: "success",// 设置ON文本颜色     (info/success/warning/danger/primary)
-                offColor: "primary",  // 设置OFF文本颜色        (info/success/warning/danger/primary)
-                size: "normal",    // 设置控件大小,从小到大  (mini/small/normal/large)
-                // 当开关状态改变时触发
+                onText: "优先",      // 设置ON文本  
+                offText: "禁止",    // 设置OFF文本  
+                onColor: "success",// 设置ON文本颜色     (info/success/warning/danger/primary)  
+                offColor: "primary",  // 设置OFF文本颜色        (info/success/warning/danger/primary)  
+                size: "normal",    // 设置控件大小,从小到大  (mini/small/normal/large)  
+                // 当开关状态改变时触发  
                 onSwitchChange: function (event, state) {
                     if (state == true) {
                         choosestatus = 1;
@@ -419,8 +503,72 @@
 
                 begintimebook();
             }
+        });
+    };
+
+    buttonx5A.onclick = function () {
+        timeinterval = prompt("请输入刷新间隔时间，以秒为单位", "1");
+        if (timeinterval == null || timeinterval == "") {
+            window.location.reload();
+        }
+        else {
+            timeinterval = parseInt(timeinterval);
+            console.log("刷新间隔时间：" + timeinterval.toString());
+
+            for (i = 1; i <= 24; i += 1) {
+                ownhate.push(i);
+            }
+            ownlike = [0, 25, 31, 26, 32, 27, 33, 28, 34, 29, 35, 30, 36, 132, 120, 108, 96, 84];
+            for (i = 13; i <= 5 * 11 + 12; i++) {
+                ownlike.push(ownlike[ownlike.length - 5] - 1);
+            }
+
+            console.log("不预约的座位：" + ownhate.slice(1));
+            console.log("优先预约的座位：" + ownlike.slice(1));
+
+            begintimebook();
         }
     };
+
+    buttonx5A1.onclick = function () {
+        timeinterval = 1;
+
+        console.log("刷新间隔时间：" + timeinterval.toString());
+
+
+        ownlike = [0, 132, 120, 108, 96, 84];
+        for (i = 1; i <= 5 * 11; i++) {
+            ownlike.push(ownlike[ownlike.length - 5] - 1);
+        }
+
+        for (i = 1; i <= 72; i += 1) {
+            ownhate.push(i);
+        }
+
+        for (i = 133; i <= 180; i += 1) {
+            ownhate.push(i);
+        }
+
+        console.log("不预约的座位：" + ownhate.slice(1));
+        console.log("优先预约的座位：" + ownlike.slice(1));
+
+        begintimebook();
+    };
+
+    // buttonb2B.onclick = function () {
+    //     timeinterval = parseInt(prompt("请输入刷新间隔时间，以秒为单位", "1"));
+
+    //     ownhate = [0];
+    //     for (var i = 145; i <= 152; i += 1) {
+    //         ownhate.push(i);
+    //     }
+    //     ownlike = [0, 66, 133, 54, 121, 42, 109, 30, 97];
+
+    //     console.log("不预约的座位：" + ownhate.slice(1));
+    //     console.log("优先预约的座位：" + ownlike.slice(1));
+
+    //     begintimebook();
+    // };
 
     button_stop.onclick = function () {
         clearInterval(time2);
