@@ -202,7 +202,7 @@
         button_user_begin.className = "btn btn-warning";
         button_user_begin.setAttribute("data-toggle", "tooltip");
         button_user_begin.setAttribute("data-placement", "right");
-        button_user_begin.title = "自由配置抢座方式,仅在选座区域有效";
+        button_user_begin.title = "自由配置抢座方式</br>仅在选座区域有效";
         button_user_begin.style.display = "block";
         button_user_begin.style.fontSize = "17px";
 
