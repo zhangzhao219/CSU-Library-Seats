@@ -165,12 +165,12 @@
 
         // 默认配置抢座的按钮
         var button_default_begin = document.createElement("button");
-        button_default_begin.innerHTML = "区域默认抢座";
+        button_default_begin.innerHTML = "默认抢座";
         button_default_begin.type = "button";
         button_default_begin.className = "btn btn-success";
         button_default_begin.setAttribute("data-toggle", "tooltip");
         button_default_begin.setAttribute("data-placement", "right");
-        button_default_begin.title = "按照默认配置抢座</br>刷新时间1秒</br>无优先座位与禁止座位";
+        button_default_begin.title = "按照默认配置抢座</br>刷新时间1秒</br>无优先座位与禁止座位</br>仅在选座区域有效";
         button_default_begin.style.display = "block";
         button_default_begin.style.fontSize = "17px";
 
@@ -198,11 +198,11 @@
 
         // 自由配置抢座的按钮
         var button_user_begin = document.createElement("button");
-        button_user_begin.innerHTML = "区域自由抢座";
+        button_user_begin.innerHTML = "自由抢座";
         button_user_begin.className = "btn btn-warning";
         button_user_begin.setAttribute("data-toggle", "tooltip");
         button_user_begin.setAttribute("data-placement", "right");
-        button_user_begin.title = "自由配置抢座方式";
+        button_user_begin.title = "自由配置抢座方式,仅在选座区域有效";
         button_user_begin.style.display = "block";
         button_user_begin.style.fontSize = "17px";
 
